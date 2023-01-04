@@ -6,7 +6,7 @@ def successor(c,i):
 
 i=0
 C=1
-while C <= 1000:
+while C <= 1000000:
     print(C)
     C = successor(C,i)
     i += 1
