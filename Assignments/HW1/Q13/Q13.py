@@ -11,7 +11,7 @@ Plotting Experimental Data
 13(a)
 '''
 #%%
-data = pd.read_csv('sunspots.txt',delimiter='\t')
+data = pd.read_csv('Q13/sunspots.txt',delimiter='\t')
 data.columns = ['Time','Sunspots']
 plt.plot(data['Time'], data['Sunspots'])
 plt.title('Number of Sunspots vs Time')
