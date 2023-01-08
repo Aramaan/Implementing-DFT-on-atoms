@@ -37,7 +37,7 @@ B
 # %%
 plt.imshow(B,cmap = 'magma')
 plt.colorbar()
-plt.savefig('Mset.png')
+plt.savefig('Q17/Mset.png')
 plt.show()
 
 # %%

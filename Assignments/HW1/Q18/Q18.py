@@ -27,6 +27,6 @@ plt.plot(x,l[0]*x + l[1],'g-.')
 plt.title('Number of Sunspots vs Time')
 plt.xlabel('Time in months')
 plt.ylabel('Number of Sunspots')
-plt.savefig("Q18_a.png")
+plt.savefig("Q18/Q18_a.png")
 plt.show()
 # %%

@@ -17,7 +17,7 @@ plt.plot(data['Time'], data['Sunspots'])
 plt.title('Number of Sunspots vs Time')
 plt.xlabel('Time in months')
 plt.ylabel('Number of Sunspots')
-plt.savefig("Q13_a.png")
+plt.savefig("Q13/Q13_a.png")
 plt.show()
 
 '''
@@ -29,7 +29,7 @@ plt.plot(data['Time'][0:1000], data['Sunspots'][0:1000])
 plt.title('Number of Sunspots vs Time')
 plt.xlabel('Time in months')
 plt.ylabel('Number of Sunspots')
-plt.savefig("Q13_b.png")
+plt.savefig("Q13/Q13_b.png")
 plt.show()
 
 '''
@@ -43,6 +43,6 @@ plt.plot(data['Time'][0:1000], Sunspots[0:1000])
 plt.title('Number of Sunspots vs Time')
 plt.xlabel('Time in months')
 plt.ylabel('Number of Sunspots')
-plt.savefig("Q13_c.png")
+plt.savefig("Q13/Q13_c.png")
 plt.show()
 # %%
