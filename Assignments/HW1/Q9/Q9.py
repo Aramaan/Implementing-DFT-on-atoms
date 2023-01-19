@@ -22,6 +22,7 @@ def BE(Z,A):
     BE = a1*A - a2*A**(2/3) -a3*Z**2/A**(1/3) -a4*(A-2*Z)**2/A +a5/A**(1/2)
     return BE
 
+print('The binding energy of an atom with A = 58 and Z = 28 is {} MeV'.format(BE(28,58)))
 '''
 9(b)
 function to calculate binding energy per nucleon for given
