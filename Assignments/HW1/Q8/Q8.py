@@ -1,10 +1,10 @@
-#%%
+
 import numpy as np
 from scipy.constants import epsilon_0,elementary_charge
 '''
 The Madelung Constant
 '''
-#%%
+
 C = elementary_charge/(4*np.pi*epsilon_0*1)
 
 def V(i,j,k):
@@ -20,5 +20,5 @@ def Vtotal(L):
                 sum = sum + V(i,j,k)
     return sum
 
-print(Vtotal(100))
-# %%
+print("The madelung constant is {}".format(Vtotal(100)))
+

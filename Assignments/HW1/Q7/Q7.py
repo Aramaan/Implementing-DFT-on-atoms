@@ -1,6 +1,7 @@
 '''
 Catalan numbers
 '''
+print('catalan numbers')
 def successor(c,i):
     return ((4*i+2)/(i+2))*c
 
