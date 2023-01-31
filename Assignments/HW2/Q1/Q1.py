@@ -23,5 +23,5 @@ df
 plt.plot(t,v)
 x = tIntegraion(t,v)
 x
-lt.plot(t,x)
+plt.plot(t,x)
 # %%

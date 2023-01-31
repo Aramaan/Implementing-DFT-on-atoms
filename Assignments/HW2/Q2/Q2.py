@@ -10,9 +10,6 @@ def f(x):
 
 def sIntegration(x,y):
     integral = [0]
-    y0 = y[0]
-    y1 = y[1]
-    y2 = y[2]
     s = x[1] -x[0]
     for i in range(2,len(x)):
         
@@ -23,19 +20,19 @@ def sIntegration(x,y):
         integral.append(integral[i//2-1] + area)
         print(i/2-1)
         print(integral)
-        y0 = y1
-        y1 = y2
-        y2 = y[i]
 
     return integral 
 
 def Simpson(a,b,n,f):
     x = np.linspace(a,b,n)
     y = f(x)
+    return x,y
 
 # %%
+
+x,y = Simpson(0,2,11,f)
 plt.plot(x,y)
 I = sIntegration(x,y)
-x
+print(x.shape)
 plt.plot(x[::2],I)
 # %%
