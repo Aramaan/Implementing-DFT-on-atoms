@@ -30,9 +30,10 @@ def Simpson(a,b,n,f):
 
 
 
-x,y = Simpson(0,2,11,f)
+x,y = Simpson(0,2,101,f)
 plt.plot(x,y)
 I = sIntegration(x,y)
 print(x.shape)
 plt.plot(x[::2],I)
+plt.show()
 
