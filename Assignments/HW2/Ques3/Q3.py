@@ -2,7 +2,9 @@
 #%%
 from matplotlib import pyplot as plt
 import numpy as np
-from Q2 import sIntegration
+import sys, os
+sys.path.append(os.path.abspath(".."))
+from Ques2.Q2 import sIntegration
 
 def f(t):
     return np.exp(-t**2)
