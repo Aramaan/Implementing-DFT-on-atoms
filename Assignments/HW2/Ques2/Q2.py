@@ -32,6 +32,10 @@ def Simpson(a,b,n,f):
 
 x,y = Simpson(0,2,101,f)
 plt.plot(x,y)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Function and its integral')
+plt.legend(['function','Integral'])
 I = sIntegration(x,y)
 print(x.shape)
 plt.plot(x[::2],I)
