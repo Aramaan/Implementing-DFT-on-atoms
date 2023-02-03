@@ -17,6 +17,15 @@ def tIntegraion(x,y):
         integral.append( integral[i-1] + area)
     return integral
 
+def trapezoidal(a, b, n, f):
+    h = float(b - a) / n
+    s = 0.0
+    s += f(a)/2.0
+    for i in range(1, n):
+        s += f(a + i*h)
+    s += f(b)/2.0
+    return s * h
+
 '''
 Does Simpson integration
  for a given function in certain interval
@@ -31,12 +40,19 @@ def sIntegration(x,y):
         integral.append(integral[i//2-1] + area)
     return integral
 
-def Simpson(a,b,n,f):
-    x = np.linspace(a,b,n)
-    y = f(x)
-    I = sIntegration(x,y)
-    return I
+def simpson(a, b, N, f):
+    s=(b-a)/N
+    integral = 0.0
+    x= a + s
+    for i in range(1,int(N/2) + 1):
+        integral += 4*f(x)
+        x += 2*s
 
+    x = a + 2*s
+    for i in range(1,int(N/2)):
+        integral += 2*f(x)
+        x += 2*s
+    return (s/3)*(f(a)+f(b)+integral)
 '''
 Does Romberg integration
  for a given function in certain interval
