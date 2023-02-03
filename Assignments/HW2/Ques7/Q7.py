@@ -1,7 +1,7 @@
 import numpy as np
 import sys, os.path
 sys.path.append(os.path.abspath('.'))
-from Ques2.Q2 import simpson
+from Packages.Integration import trapezoidal,romberg
 
 def f(x):
     return (np.sin(np.sqrt(100*x)))**2
@@ -9,7 +9,7 @@ def f(x):
 maxE = 10**(-6)
 
 n = 1
-Ii = 
+Ii = 0
 while(np.abs(If -Ii)> maxE):
 
     print('Slices: {}, Integral Estimate: {}, Error Estimate: {}'.format())
