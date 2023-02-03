@@ -21,11 +21,11 @@ def GaussQuad(a,b,N,f):
     integral = np.sum(w*f(x))
     return integral
 
-def GaussQuad2d(a,b,n,f):
+def GaussQuad2d(a,b,n,f,*z):
     [x,wx] = roots_legendre(n+1)
     [y,wy] = roots_legendre(n+1)
     [x,wx] = mapper(x,wx,a,b)
-    x,y = np.meshgrid(x,y,a,b)
+    x,y = np.meshgrid(x,y)
     wx,wy = np.meshgrid(wx,wy)
-    integral = np.sum(wx*wy*f(x,y))
+    integral = np.sum(wx*wy*f(x,y,*z))
     return integral

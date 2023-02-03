@@ -2,10 +2,10 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.constants import gravitational_constant
 import sys, os
-sys.path.append(os.path.abspath(".."))
+sys.path.append(os.path.abspath("."))
 from Packages.Integration import GaussQuad2d
 
-G = gravitational_constant.value
+G = gravitational_constant
 
 '''
 Gravitational pull of a uniform sheet
@@ -18,5 +18,14 @@ L = 10
 N = 100
 
 
-z = np.linspace(0.,10,30)
-Fz = np.array([GaussQuad2d(-L/2,L/2,100,I(Z)) for Z in z])
+Z = np.linspace(0.,10,30)
+I2 = lambda 
+Fz = np.array([GaussQuad2d(I,-L/2,L/2,100,) for z in Z])
+
+plt.plot(z,Fz,c='r')
+plt.xlabel(r'$z$')
+plt.ylabel(r'$F_z$')
+plt.title('Gravitational pull')
+plt.grid()
+plt.savefig('14_1.png')
+plt.show()

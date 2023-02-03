@@ -2,8 +2,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from math import factorial
 import sys, os
-sys.path.append(os.path.abspath(".."))
-from Ques11.Q11 import GaussQuad
+sys.path.append(os.path.abspath("."))
+from Packages.Integration import GaussQuad
 
 '''
 Quantum uncertainity in the harmonic oscillator
