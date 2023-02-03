@@ -17,8 +17,12 @@ def cv(T):
     return C
 
 T = np.linspace(5,500,100)
-Cv = cv(T)
+Cv = [cv(t) for t in T]
 plt.plot(T,Cv)
+plt.title(r'Debye Heat capacity vs Temperature')
+plt.xlabel(r'$T$')
+plt.ylabel(r'$C_V(T)$')
+plt.savefig('Ques9/Q9.png')
 plt.show()
 
     
