@@ -21,7 +21,7 @@ def Fz(z):
 
 
 Z = np.linspace(0,10,30)
-F = np.array([Fz(z)for z in Z])
+F = np.array([Fz(z) for z in Z])
 plt.plot(Z,F)
 plt.xlabel(r'$z$')
 plt.ylabel(r'$F_z$')
