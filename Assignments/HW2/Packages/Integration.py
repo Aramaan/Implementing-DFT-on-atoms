@@ -57,7 +57,7 @@ def simpson(a, b, N, f):
 Does Romberg integration
  for a given function in certain interval
 '''
-def Romberg():
+def romberg():
     pass
 
 '''
