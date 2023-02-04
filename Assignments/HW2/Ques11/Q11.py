@@ -21,13 +21,12 @@ x = np.linspace(-5,5,300)
 wl = 1 #wavelength
 z = 3 
 
-
 Intensity = [I(u) for u in x*np.sqrt(2/(wl*z))]
 
 plt.plot(x,Intensity)
-plt.title(r'Diffraction of plane wave by a straight barrirer')
+plt.title(r'Diffraction of plane wave by a straight barrier')
 plt.xlabel(r'$x$')
-plt.ylabel(r'$\frac{I}{I_0}$ at $(z=3)$')
+plt.ylabel(r'$I/I0$ at $z=3$')
 plt.grid()
 plt.savefig('Ques11/Q11.png')
 plt.show()

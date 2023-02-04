@@ -10,7 +10,7 @@ def integrand(x):
 
 def cv(T):
     V = 10**(-3) # 10^(-3) cumbic meters
-    ro = Avogadro
+    ro = Avogadro*10**5
     DebT = 428
     integral = GaussQuad(0,DebT/T,50,integrand)
     C = 9*V*ro*Boltzmann*(T/DebT)**3*integral
