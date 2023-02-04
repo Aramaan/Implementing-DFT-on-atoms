@@ -32,17 +32,13 @@ plt.ylabel('y(cm)')
 plt.title(r'Potential in units of 0.1nV')
 
 plt.scatter([-5],[0],c='b',marker='o',s=100)
-plt.scatter([-5],[0],c='w',marker='_',s=50)
 plt.scatter([5],[0],c='r',marker='o',s=100)
-plt.scatter([5],[0],c='w',marker='+',s=50)
 plt.savefig('Ques17/Q17(i).png')
 plt.show()
 
 grad = gradient(total,0.01,0.01)
 Ex = -grad[:,:,1]
 Ey = -grad[:,:,0]
-# Ex = np.piecewise(Ex,[Ex>=1,Ex<=-1],[1,-1,lambda Ex: Ex])
-# Ey = np.piecewise(Ey,[Ey>=1,Ey<=-1],[1,-1,lambda Ey: Ey])
 
 
 plt.streamplot(x*100,y*100,Ex,Ey,color='white')
@@ -51,11 +47,9 @@ plt.colorbar()
 
 plt.xlabel('x(cm)')
 plt.ylabel('y(cm)')
-plt.title(r'Electric field in units of 0.1nV/m')
 plt.scatter([-5],[0],c='b',marker='o',s=100)
-plt.scatter([-5],[0],c='w',marker='_',s=50)
 plt.scatter([5],[0],c='r',marker='o',s=100)
-plt.scatter([5],[0],c='w',marker='+',s=50)
+plt.title(r'Electric field in units of 0.1nV/m')
 plt.savefig('Ques17/Q17(ii).png')
 plt.show()
 plt.show()
@@ -68,11 +62,6 @@ def phi(x,y,sigma):
     Integrand = lambda x0,y0: sigma(x0,y0)/(4*pi*e0*np.sqrt((x-x0)**2+(y-y0)**2))
     Integral = GaussQuad2d(-L/2,L/2,99,Integrand)
     return Integral
-
-# def phi(x,y,sigma):
-#     I = lambda xp,yp:sigma(xp,yp)/np.sqrt((x-xp)**2+(y-yp)**2)
-#     return (1./(4*np.pi*e0))*GaussQuad2d(I,[-L/2.,-L/2.],[L/2.,L/2.],[N,N])
-
 
 
 total = np.zeros((len(y),len(x)))
@@ -89,10 +78,6 @@ plt.xlabel('x(cm)')
 plt.ylabel('y(cm)')
 plt.title(r'Potential in units of nV')
 
-plt.scatter([-5],[0],c='b',marker='o',s=100)
-plt.scatter([-5],[0],c='w',marker='_',s=50)
-plt.scatter([5],[0],c='r',marker='o',s=100)
-plt.scatter([5],[0],c='w',marker='+',s=50)
 plt.savefig('Ques17/Q17(iii).png')
 plt.show()
 
@@ -110,10 +95,6 @@ plt.colorbar()
 plt.xlabel('x(cm)')
 plt.ylabel('y(cm)')
 plt.title(r'Electric field in units of nV/m')
-plt.scatter([-5],[0],c='b',marker='o',s=100)
-plt.scatter([-5],[0],c='w',marker='_',s=50)
-plt.scatter([5],[0],c='r',marker='o',s=100)
-plt.scatter([5],[0],c='w',marker='+',s=50)
 plt.savefig('Ques17/Q17(iv).png')
 plt.show()
 plt.show()

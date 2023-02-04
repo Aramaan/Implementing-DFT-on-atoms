@@ -34,20 +34,26 @@ def phi(n,x):
 for n in range(4):
     plt.plot(x,phi(n,x))
 plt.legend(range(4))
-plt.title('Harmonic Oscillator Wavefunctions')
+plt.title('First Few Harmonic Oscillator Wavefunctions')
+plt.xlabel('position')
+plt.ylabel('wavefunction')
+plt.savefig('Ques13/Q13(i)')
 plt.show()
 
 
 y = np.linspace(-10,10,500)             
 plt.plot(y,phi(30,y))
 plt.title('Harmonic Oscillator Wavefunctions for n=30')
+plt.xlabel('position')
+plt.ylabel('wavefunction')
+plt.savefig('Ques13/Q13(ii)')
 plt.show()
 
 '''
 Uncertainity
 '''
 def RootSquareUncertainity(n):
-    f = lambda x: x**2*np.mod(phi(n,x))**2
+    f = lambda x: x**2*np.abs(phi(n,x))**2
     u = GaussQuad(-10,10,100,f)
     return u
-print(RootSquareUncertainity(5))
+print('The uncertainity or the root mean square position of the particle is {} for n = 5'.format(RootSquareUncertainity(5)))
