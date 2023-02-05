@@ -53,12 +53,21 @@ def simpson(a, b, N, f):
         integral += 2*f(x)
         x += 2*s
     return (s/3)*(f(a)+f(b)+integral)
+
 '''
 Does Romberg integration
  for a given function in certain interval
 '''
-def romberg():
-    pass
+
+def rombergTRAP(a, b, p, f, I):
+    n = 1
+    T = np.zeros((p+1,p+1))
+    for i in range(1,p+1):
+        T[i,1] = I(a,b,n,f)
+        for j in range(2,i+1):
+            T[i,j] = T[i,j-1]+(T[i,j-1]-T[i-1,j-1])/(4**(j-1)-1) #Richardson Extrp
+        n *= 2
+    return T[p,p]
 
 '''
 maps the points and weights for 
