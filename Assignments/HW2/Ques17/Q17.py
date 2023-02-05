@@ -84,8 +84,6 @@ plt.show()
 grad = gradient(total,0.01,0.01)
 Ex = -grad[:,:,1]
 Ey = -grad[:,:,0]
-# Ex = np.piecewise(Ex,[Ex>=1,Ex<=-1],[1,-1,lambda Ex: Ex])
-# Ey = np.piecewise(Ey,[Ey>=1,Ey<=-1],[1,-1,lambda Ey: Ey])
 
 
 plt.streamplot(x*100,y*100,Ex,Ey,color='white')
