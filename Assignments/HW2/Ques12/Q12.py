@@ -25,3 +25,10 @@ error = 4*np.abs(Integral - Integral2)/3
 print('The value of the integral is {}. \n The method used is Gaussian Quadrature with 100 points \n the error is around {} '.format(Integral,error))
 SBconstant = k**4*Integral/(4*np.pi**2*c**2*hbar**3)
 print('The calculated value of Stefan-Boltzmann constant is {} whereas that online is {}'.format(SBconstant,Stefan_Boltzmann))
+
+'''
+The value of the integral is 6.493939402266886. 
+ The method used is Gaussian Quadrature with 100 points 
+ the error is around 1.8474111129762605e-13 
+The calculated value of Stefan-Boltzmann constant is 5.670374419184479e-08 whereas that online is 5.670374419e-08
+'''
