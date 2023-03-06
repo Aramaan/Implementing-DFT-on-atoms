@@ -25,42 +25,42 @@ def banded(A, b):
     """
     Perform banded Gaussian elimination on the system Ax = b
     """
-    m,n = A.shape
-    for k in range(n-1):
-        # Compute the pivot element
-        pivot = A[k, k]
+    n = A.shape[0]
+    a = np.concatenate((A,b),axis=1)
 
-        # Update the current row of A and b
-        for j in range(k+1, min(n, k+3)):
-            factor = A[k, j] / pivot
-            for i in range(max(0, k-2), k):
-                A[j,i] -= factor * A[k, i]
-            #b[j] -= factor * b[k]
+    # Applying Gauss Elimination
+    for i in range(n):
+        pivot =  a[i][i]
+        for j in range(i+1, min(n,i+3)):
+            ratio = a[j][i]/pivot
+            for k in range(0,n+1):
+                a[j][k] = a[j][k] - ratio * a[i][k]
 
-        # Check for singularity
-        if np.abs(A[k+1, k]) < 1e-10:
-            raise ValueError("Pivot is too small, the matrix is singular.")
-
-    # Solve the upper-triangular system
+    # Back Substitution
     x = np.zeros(n)
-    x[n-1] = A[n-1,n-1] / A[n-1, n-2]
-    for k in range(n-2, -1, -1):
-        x[k] = (b[k] - np.dot(A[k, k+1:min(n, k+2+1)], x[k+1:min(n, k+2+1)])) / A[k, k]
-    
+    x[n-1] = a[n-1][n]/a[n-1][n-1]
+
+    for i in range(n-2,-1,-1):
+        
+        x[i] = a[i][n]
+        
+        for j in range(i+1,n):
+            x[i] = x[i] - a[i][j]*x[j]
+        
+        x[i] = x[i]/a[i][i]
+
     return x
 
 '''
 for N = 6
 '''
 A,w = Init(6)
-v1 = np.linalg.solve(A,w)
-
+v1 = banded(A,w)
+print(v1)
 '''
 for N=1e4
 '''
-#A,w = Init(10000)
-#v2 = np.linalg.solve(A,w)
+A,w = Init(10000)
+v2 = banded(A,w)
+np.savetxt("Voltages.txt",v2)
 
-print(v1)
-v3 = v1 = banded(A,w)
-print(v3)
