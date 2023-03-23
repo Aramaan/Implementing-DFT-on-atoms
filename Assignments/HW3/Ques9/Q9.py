@@ -3,11 +3,11 @@ from matplotlib import pyplot as plt
 from scipy.constants import gravitational_constant
 
 Vp = 5
-R1 = 1e3
-R2 = 4e3
-R3 = 3e3
-R4 = 2e3
-I0 = 3e-3
+R1 = 1
+R2 = 4
+R3 = 3
+R4 = 2
+I0 = 3e-6
 VT = 5e-2
 
 def J(I):
@@ -26,6 +26,7 @@ def F(I):
                  (Vp -R1*I[0] - R2*I[1]),
                  (I[2] +I5 -I[3]),
                  (I[0]-I[1] - I5)])
+    return F
     
 def Newton(F,J,e):
     Ii = [0,0,0,0]
@@ -35,5 +36,6 @@ def Newton(F,J,e):
         delI = np.linalg.solve(J(Ii),-F(Ii))
         If = Ii + delI
     return If
-
-print(Newton(F,J,1e-4))
+I = Newton(F,J,1e-10)
+print(I)
+print(R1*I[0] - R3*I[2])

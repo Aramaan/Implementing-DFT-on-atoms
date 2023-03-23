@@ -41,21 +41,25 @@ eig = np.sort(np.linalg.eigvals(Hamiltonian2))
 print(eig[0:10])
 
 phi = np.zeros([10,1])
-l,v = np.linalg.eig(Hamiltonian1)
+l,v = np.linalg.eig(Hamiltonian2)
 print("djfelllllllllllllllllllll")
-print(l,v)
+#print(l,v) 
 
 def wavef(x,v):
     sum = 0
-    for i in range(10):
-        sum += np.absolute(v[i]*np.sin(np.pi*(i+1)*x/L))
-    return sum
-
+    num = 0
+    for i in range(100):
+        sum += v[i]*np.sin(np.pi*(i+1)*x/L)
+        num += L*v[i]**2/2
+    return (sum)/np.sqrt(num)
+print(v)
 x = np.linspace(0,L,200)
 plt.plot(x,wavef(x,v[:,0]))
 plt.show()
-plt.plot(x,wavef(x,v[:,1]))
+plt.plot(x,wavef(x,v[:,4])**2)
 plt.show()
-plt.plot(x,wavef(x,v[:,2]))
+plt.plot(x,wavef(x,v[:,5])**2)
 plt.show()
+print(np.trapz(x,wavef(x,v[:,3])**2))
+print()
 

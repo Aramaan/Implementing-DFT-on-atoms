@@ -62,5 +62,5 @@ for N=1e4
 '''
 A,w = Init(10000)
 v2 = banded(A,w)
-np.savetxt("Voltages.txt",v2)
+np.savetxt(r"Ques14/potentials.txt",v2)
 
