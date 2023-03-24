@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 dt = 1 
 
 # Half-life values in minutes
-tau1, tau2, tau3 = 46, 2.2, 3.3 
+T1, T2, T3 = 46, 2.2, 3.3 
 
 def decay_type1(N1, N2, N3, N4):
     """Function to simulate change of first isotope"""
     change = np.random.uniform(0,1, size=N1)
-    prob = 1 - 2**(-dt / (tau1 * 60))
+    prob = 1 - 2**(-dt / (T1 * 60))
     change = int(np.sum(np.array(change <= prob )))
     N1 -= change
     N2 += change
@@ -19,7 +19,7 @@ def decay_type1(N1, N2, N3, N4):
 def decay_type2(N1, N2, N3, N4):
     """Function to simulate change of second isotope"""
     change = np.random.uniform(0,1, size=N3)
-    prob = 1 - 2**(-dt / (tau2 * 60))
+    prob = 1 - 2**(-dt / (T2 * 60))
     change = int(np.sum(np.array(change <= prob )))
     N3 -= change
     N1 += change
@@ -32,13 +32,13 @@ def decay_type3(N1, N2, N3, N4):
     N1_to_N4 = N3 - N1_to_N2 
     # change to N2
     change = np.random.uniform(0,1, size=N1_to_N2)
-    prob = 1 - 2**(-dt / (tau3 * 60))
+    prob = 1 - 2**(-dt / (T3 * 60))
     change = int(np.sum(np.array(change <= prob )))
     N3 -= change
     N2 += change
     # change to N4
     change = np.random.uniform(0,1, size=N1_to_N4)
-    prob = 1 - 2**(-dt / (tau3 * 60))
+    prob = 1 - 2**(-dt / (T3 * 60))
     change = int(np.sum(np.array(change <= prob )))
     N3 -= change
     N4 += change
