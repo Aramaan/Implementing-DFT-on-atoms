@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import animation
-import datetime
 
 def metropolis_mcmc(Lattice, E, M, steps, T0):
     """
@@ -19,30 +18,36 @@ def metropolis_mcmc(Lattice, E, M, steps, T0):
     marr = []
     x = Lattice
     T = T0
-    t = 0
 
+    x_old = np.copy(x)
     x_new = np.copy(x)
-    best_f = E(x)
+    f_old = E(x)
 
     for i in range(steps):
         # sample a new point from proposal distribution
         rx = np.random.randint(0,nx)
         ry = np.random.randint(0,ny)
         x_new[rx,ry]  *= -1
-        f_new = E(x_new)
+        
+        s = np.hstack((np.take(x_new[rx],[ry-1,ry+1],mode='wrap'),np.take(x_new[:,ry],[rx-1,rx+1],mode='wrap')))
+        f_new = f_old-2*(-J*x_old[rx,ry]*np.sum(s))
 
         # Metropolis-Hastings acceptance probability
-        alpha = min(1, np.exp((best_f - f_new) / T))
+        alpha = min(1, np.exp((f_old - f_new) / T))
 
         # accept or reject the new point
         if np.random.uniform() < alpha:
-            x = np.copy(x_new)
-            if f_new < best_f:
-                best_f = f_new
-        t += 1
-        xarr.append(x)
-        marr.append(M(x))
-        farr.append(f_new)
+            x_old = np.copy(x_new)
+            f_old = f_new
+        else:
+            x_new = np.copy(x_old)
+            f_new = f_old
+
+
+
+        xarr.append(x_old)
+        marr.append(M(x_old))
+        farr.append(f_old)
 
     return np.array(xarr), farr, marr
 
@@ -55,23 +60,19 @@ def Energy(L):
     for i in range(n1):
         for j in range(n2):
             s = np.hstack((np.take(L[i],[j-1,j+1],mode='wrap'),np.take(L[:,j],[i-1,i+1],mode='wrap')))
-            sum += np.sum(L[i,j]*s)
-    E = -J*(sum/4)
+            sum += L[i,j]*np.sum(s)
+    E = -J*(sum/2)
     return E
 
 def Mag(L):
-    sum = 0
-    n1,n2 = L.shape
-    for i in range(n1):
-        for j in range(n2):
-            sum += L[i,j]
+    sum = np.sum(L)
     return sum
 
 
 T = 1
 nx,ny = 20,20
 L = np.random.choice([1,-1],size = [nx,ny])
-steps = int(1e6)
+steps = int(1e5)
 L,E,M = metropolis_mcmc(L, Energy, Mag, steps, T)
 
 
@@ -109,9 +110,9 @@ images = []
 #     ims.append(plt.pcolor(L[step])) 
 
 
-for step in np.arange(0,steps,1):
+for step in np.arange(0,steps,100):
     images.append((plt.pcolor(L[step,:-1, :-1]),)) 
 
-anime = animation.ArtistAnimation(fig, images, interval=30, repeat_delay=1000, blit=True)
+anime = animation.ArtistAnimation(fig, images, interval=20, repeat_delay=1000, blit=True)
 anime.save('Ques7/Simulation(T=1).mp4', metadata={})    
 plt.show()

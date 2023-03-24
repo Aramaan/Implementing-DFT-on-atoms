@@ -1,53 +1,85 @@
 import numpy as np
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 from matplotlib import animation
-import datetime
 
-def simulated_annealing_mcmc(func, x0, sigma, T0, Tf, cooling_schedule):
+def energy(lattice):
     """
-    Simulated Annealing using Metropolis-Hastings algorithm.
-    func: the objective function to be optimized
-    x0: initial value
-    sigma: standard deviation for the Gaussian proposal distribution
-    T0: initial temperature
-    Tf: final temperature
-    cooling_schedule: function that takes in temperature and returns new temperature
+    Computes the energy of a given lattice as minus the number of dimers.
     """
-    xarr = []
-    farr = []
-    x = x0
-    T = T0
-    t = 0
-    best_x = x
-    best_f = func(x)
+    return -np.sum(lattice)
 
-    while T > Tf:
-        # sample a new point from proposal distribution
-        x_new = x + np.random.normal(0, sigma)
-        f_new = func(x_new)
+def metropolis(lattice, T):
+    """
+    Performs a single Metropolis update on the lattice at temperature T.
+    """
+    nx, ny = lattice.shape
+    i = np.random.randint(nx)
+    j = np.random.randint(ny)
+    if lattice[i,j] == 1 and lattice[(i+1)%nx,j] == 1:
+        # remove dimer
+        new_lattice = np.copy(lattice)
+        new_lattice[i,j] = 0
+        new_lattice[(i+1)%nx,j] = 0
+        deltaE = energy(new_lattice) - energy(lattice)
+        if deltaE < 0 or np.random.uniform() < np.exp(-deltaE/T):
+            lattice[:] = new_lattice[:]
+    elif lattice[i,j] == 0 and lattice[(i+1)%nx,j] == 0:
+        # add dimer
+        new_lattice = np.copy(lattice)
+        new_lattice[i,j] = 1
+        new_lattice[(i+1)%nx,j] = 1
+        deltaE = energy(new_lattice) - energy(lattice)
+        if deltaE < 0 or np.random.uniform() < np.exp(-deltaE/T):
+            lattice[:] = new_lattice[:]
+    # otherwise do nothing
+    return np.copy(lattice)
 
-        # Metropolis-Hastings acceptance probability
-        alpha = min(1, np.exp((best_f - f_new) / T))
+def simulate(lattice, T_init, cooling_schedule, n_steps):
+    """
+    Simulates the dimer problem using simulated annealing.
+    """
+    T = T_init
+    energies = [energy(lattice)]
+    temperatures = [T]
+    L = []
 
-        # accept or reject the new point
-        if np.random.uniform() < alpha:
-            x = x_new
-            if f_new < best_f:
-                best_x = x_new
-                best_f = f_new
-        t += 1
-        xarr.append(x)
-        farr.append(f_new)
-
-        # update temperature
+    for i in range(n_steps):
+        L.append(metropolis(lattice, T))
         T = cooling_schedule(T)
+        energies.append(energy(lattice))
+        temperatures.append(T)
+
+    return np.array(L), energies, temperatures
+
+# create initial lattice with random dimers
+def fill_grid(probability):
+    # Initialize empty grid
+    grid = np.zeros((50, 50), dtype=np.int8)
+    
+    # Fill grid randomly with dimers with given probability
+    for i in range(49):
+        for j in range(49):
+            if np.random.rand() < probability:
+                grid[i:i+2, j:j+2] = 1
+                
+    return grid
+
+lattice = fill_grid(0.2)
+
+# define the cooling schedule
+T_init = 5.0
+n_steps = 10000
+cooling_schedule = lambda T: T*0.99
+
+# run the simulation
+lattice, energies, temperatures = simulate(lattice, T_init, cooling_schedule, n_steps)
 
 fig = plt.figure(figsize=(10,10))
-ims = []
+images = []
 
-for add in np.arange(0,pos.shape[0]//4,1):
-    ims.append((plt.pcolor(pos[add,:-1, :-1],cmap='nipy_spectral'),)) 
+for step in np.arange(0,n_steps,10):
+    images.append((plt.pcolor(lattice[step,:-1, :-1]),)) 
 
-im_ani = animation.ArtistAnimation(fig, ims, interval=35, repeat_delay=1000, blit=True)
-im_ani.save('Dimer Filling.mp4', metadata={'Artist':'Alankar','Album':'PH 354','Comment':'steps = %d'%steps,'Title':'Dimer Covering Problem','Year':datetime.datetime.now().year})
+anime = animation.ArtistAnimation(fig, images, interval=20, repeat_delay=1000, blit=True)
+anime.save('Ques9/Dimer.mp4', metadata={})      
 plt.show()
