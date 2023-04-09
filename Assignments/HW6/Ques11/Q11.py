@@ -1,5 +1,7 @@
 import numpy as np
 from scipy.constants import hbar,m_e,eV
+from matplotlib import pyplot as plt
+
 
 def RK4(ode_func, y0, t):
     """
@@ -28,73 +30,88 @@ def RK4(ode_func, y0, t):
 
     return y[:,:n]
 
-#Relation of code units with SI units
-hbar = 1.0545718e-34 #Js
-UNIT_ENERGY = hbar #nm -> m
-UNIT_TIME = 1 #s
-UNIT_LENGTH = 1e-10 # A -> m
-UNIT_MASS = UNIT_ENERGY*UNIT_TIME**2/UNIT_LENGTH**2
 
-hbar = 1.0
-m = 9.10938356e-31/UNIT_MASS #electron mass
 
-def f(x,psi,V,E): 
-    psi, x1 = psi
-    psidot = x1
-    psiddot = (2*m/hbar**2)*(V(x)-E)*psi
-    return np.array([[psidot,psiddot]]).T
+V0 = 50*eV
+a = 1e-11
 
-V0 = 50*1.609e-19/UNIT_ENERGY
-a = 1e-11/UNIT_LENGTH
 
-x = np.linspace(-10*a,10*a,100) #Time in code units
-x0 = [.001,0]
+def solve_schrodinger_eq(E0,potential,tol = 1e-8,xi = -10*a,xf = 10*a,N = 1000):
 
-def eigen_energy(guess,potential):
-    Enew = guess
-    Eold = guess
-    dE = 0.1*guess
-    tol = 1e-8
-    soln_old = RK4.RK4(f,x0,x,potential,Eold)
-    soln_new = np.copy(soln_old)
-    counter = 0
+    x = np.linspace(xi,xf,N)
+    x0 = [.001,0]
+
+    def f(x,psi,V,E): 
+        w, dwdt = psi
+        ddwdt = (2*m_e/hbar**2)*(V(x)-E)*w
+        return np.array([[dwdt,ddwdt]]).T
+
+    prevE = E0
+    E = E0 + 10*eV
+    dE = 0.1*E0
+    prevPhi = RK4(lambda x,psi: f(x,psi,potential,prevE),x0,x)
+    Phi = prevPhi
     
-    while (np.abs((Enew-Eold)/Eold)>=tol or counter==0):
-        counter += 1
-        Eold = Enew
-        soln_old = np.copy(soln_new)
-        Enew = Eold + dE
-        soln_new = RK4(f,x0,x,potential,Enew)
-        if (np.abs(soln_new[0,-1])>np.abs(soln_old[0,-1])): dE = -dE
-        if (soln_new[0,-1]*soln_old[0,-1]<0): dE = dE/2
+    while (np.abs(((E-prevE)/eV)/(prevE/eV))>=tol):
+        prevE = E
+        prevPhi = np.copy(Phi)
+        E = prevE + dE
+        Phi = RK4(lambda x,psi: f(x,psi,potential,E),x0,x)
+        if (np.abs(Phi[0,-1])>np.abs(prevPhi[0,-1])):
+            dE = -dE
+        if (Phi[0,-1]*prevPhi[0,-1]<0):
+            dE = dE/2
     
-    return (Eold,soln_old)
- 
-def find_states(n,potential):
-        counter = -1
-        Enew = 0
-        Eold = 0
-        factor = 1
-        while(counter<n):
-            if(Enew!=Eold): counter += 1
-            Eold = Enew
-            Enew, wave_func = eigen_energy(factor*V0,potential)            
-            factor += 0.5
-        return Enew
+    return (x,prevE,prevPhi)
 
-potential = lambda x: V0*(x/a)**2
 print('Harmonic Oscillator:')
-E = find_states(0,potential)
-print('Ground State: %.1f eV'%(E*UNIT_ENERGY/1.602e-19))
-E = find_states(0,potential)
-print('1st Excited State: %.1f eV'%(Eold*UNIT_ENERGY/1.602e-19))
-Eold, wave_func = eigen_energy(10*V0,potential)
-print('2nd Excited State: %.1f eV'%(Eold*UNIT_ENERGY/1.602e-19))
-potential = lambda x: V0*(x/a)**4
+V = lambda x: V0*(x/a)**2
+x, Energy, phi = solve_schrodinger_eq(V0,V)
+print('Energy of ground state is {} eV'.format(Energy/eV))
+x, Energy, phi = solve_schrodinger_eq(7*V0,V)
+print('Energy of 1st excited state is {} eV'.format(Energy/eV))
+x, prevE, phi = solve_schrodinger_eq(20*V0,V)
+print('Energy of 2nd excited state is {} eV'.format(Energy/eV))
+
 print('\nAnharmonic Oscillator:')
-Eold, wave_func = eigen_energy(2*V0,potential)
-print('Ground State: %.1f eV'%(Eold*UNIT_ENERGY/1.602e-19))
-Eold, wave_func = eigen_energy(10*V0,potential)
-print('1st Excited State: %.1f eV'%(Eold*UNIT_ENERGY/1.602e-19))
-Eold, wave_func = eigen_energy(18*V0,potential)
-print('2nd Excited State: %.1f eV'%(Eold*UNIT_ENERGY/1.602e-19))
+V = lambda x: V0*(x/a)**4
+x, Energy, phi1 = solve_schrodinger_eq(V0,V)
+print('Energy of ground state is {} eV'.format(Energy/eV))
+x, Energy, phi2 = solve_schrodinger_eq(10*V0,V)
+print('Energy of 1st excited state is {} eV'.format(Energy/eV))
+x, Energy, phi3 = solve_schrodinger_eq(20*V0,V)
+print('Energy of 2nd excited state is {} eV'.format(Energy/eV))
+
+'''
+Harmonic Oscillator:
+Energy of ground state is 138.0214118957519 eV
+Energy of 1st excited state is 414.0642380714417 eV
+Energy of 2nd excited state is 414.0642380714417 eV
+
+Anharmonic Oscillator:
+Energy of ground state is 205.3018283843994 eV
+Energy of 1st excited state is 735.6730675697319 eV
+Energy of 2nd excited state is 1443.5337638854967 eV
+'''
+
+A1 = 2*np.trapz(x[0:500],phi1[0][0:500])
+A2 = 2*np.trapz(x[0:500],phi2[0][0:500])
+A3 = 2*np.trapz(x[0:500],phi3[0][0:500])
+phi1 = np.array(phi1[0])/A1
+phi2 = np.array(phi2[0])/A2
+phi3 = np.array(phi3[0])/A3
+
+plt.figure(figsize=(10,10))
+plt.plot(x,phi1)
+plt.plot(x,phi2)
+plt.plot(x,phi3)
+plt.ylim((-1e11,1e11))
+
+plt.grid()
+plt.ylabel(r'$phi$')
+plt.xlabel(r'$x$')
+plt.title(r'Anharmonic Oscillator')
+plt.legend(loc='best')
+plt.savefig('Ques11/11.png')
+plt.show()
+
