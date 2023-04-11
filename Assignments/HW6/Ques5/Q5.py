@@ -28,80 +28,98 @@ def RK4(ode_func, y0, t):
 
     return y[:,:n]
 
-def f_drag(t,x,m,rho,C,R,g): #Quadratic drag model
-    x, x1, y, x2 = x
-    xdot = x1
-    ydot = x2
-    x1dot = -(np.pi/(2*m))*R**2*rho*C*xdot*np.sqrt(xdot**2+ydot**2)
-    x2dot = -(np.pi/(2*m))*R**2*rho*C*ydot*np.sqrt(xdot**2+ydot**2) - g
-    return np.array([[xdot,x1dot,ydot,x2dot]]).T
+import numpy as np
+import matplotlib.pyplot as plt
 
-def f_no_drag(t,x,g):
-    x, x1, y, x2 = x
-    xdot = x1
-    ydot = x2
-    x1dot = 0
-    x2dot = - g
-    return np.array([[xdot,x1dot,ydot,x2dot]]).T
+class Projectile:
+    def __init__(self, m, R, angle, v0, rho, C, g):
+        self.m = m
+        self.R = R
+        self.angle = angle
+        self.v0 = v0
+        self.rho = rho
+        self.C = C
+        self.g = g
+        self.x0 = [0, v0 * np.cos(angle), 0, v0 * np.sin(angle)]
 
-m = 1 #kg
-R = 8*1e-2 #m
-angle = 30 #deg
-v0 = 100 #m/s
-rho = 1.22 #kg/m^3
-C = 0.47
-g = 9.8 #ms^-2
-x0 = [0,v0*np.cos(np.deg2rad(angle)),0,v0*np.sin(np.deg2rad(angle))] #x=0 vx, y=0 vy
+    def f_drag(self, t, x):
+        x, x1, y, y1 = x
+        dxdt = x1
+        dydt = y1
+        ddxdt = -(np.pi / (2 * self.m)) * self.R ** 2 * self.rho * self.C * dxdt * np.sqrt(dxdt ** 2 + dydt ** 2)
+        ddydt = -(np.pi / (2 * self.m)) * self.R ** 2 * self.rho * self.C * dydt * np.sqrt(dxdt ** 2 + dydt ** 2) - self.g
+        return np.array([[dxdt, ddxdt, dydt, ddydt]]).T
 
-t = np.linspace(0,7,10000)
-soln = RK4.RK4(f_drag,x0,t,m,rho,C,R,g)
-t_no_drag = np.linspace(0,10.5,10000)
-no_drag = RK4.RK4(f_no_drag,x0,t_no_drag,g)
+    def f_no_drag(self, t, x):
+        x, x1, y, y1 = x
+        dxdt = x1
+        dydt = y1
+        ddxdt = 0
+        ddydt = - self.g
+        return np.array([[dxdt, ddxdt, dydt, ddydt]]).T
 
-plt.figure(figsize=(13,10))
-plt.plot(soln[0],soln[2],label=r'Quadratic Drag Model')
-plt.plot(no_drag[0],no_drag[2],label=r'No Drag Model')
+    def solve_drag(self, t):
+        return RK4( self.f_drag, self.x0, t)
+
+    def solve_no_drag(self, t):
+        return RK4(self.f_no_drag, self.x0, t)
+
+
+t = np.linspace(0, 7, 10000)
+# Create instance of Projectile class
+projectile = Projectile(1, 8 * 1e-2, np.pi/6, 100, 1.22, 0.47, 9.8)
+
+# Solve for trajectory with drag
+soln = projectile.solve_drag(t)
+
+# Solve for trajectory without drag
+t_no_drag = np.linspace(0, 10.5, 10000)
+no_drag = projectile.solve_no_drag(t_no_drag)
+
+plt.figure(figsize=(10,10))
+plt.plot(soln[0],soln[2],label=r'With Drag')
+plt.plot(no_drag[0],no_drag[2],label=r'Without Drag')
 plt.grid()
-plt.ylabel(r'y (m)',size=18)
-plt.xlabel(r'x (m)',size=20)
+plt.ylabel(r'y (m)')
+plt.xlabel(r'x (m)')
 plt.ylim(0,130)
-plt.title(r'Trajectory of a Projectile', size=21)
-plt.tick_params(axis='both', which='major', labelsize=15)
-plt.tick_params(axis='both', which='minor', labelsize=12)
-plt.legend(loc='best',prop={'size': 18})
-plt.savefig('5_1.png')
+plt.title(r'No Drag Trajectory')
+plt.legend(loc='best')
+plt.savefig('Ques5/5(i).png')
 plt.show()
 
-m = np.linspace(0.1,10,100)
+m = np.linspace(0.1,10,5)
 freq = 25
 Range = np.zeros(len(m))
-
 t = np.linspace(0,20,1000)
-plt.figure(figsize=(13,10))
-for idx, mass in enumerate(m):
-    soln = RK4.RK4(f_drag,x0,t,mass,rho,C,R,g)
-    Range[idx] = soln[0,np.argmax(soln[2,:]<0)-1]-soln[0,0]
-    if(idx%freq==0): plt.plot(soln[0],soln[2],label=r'mass = %.2f'%mass)
+
+plt.figure(figsize=(10,10))
+
+Range = []
+for mass in m:
+    projectile = Projectile(mass, 8 * 1e-2, np.pi/6, 100, 1.22, 0.47, 9.8)
+    soln = projectile.solve_drag(t)
+    range_idx = np.argmax(soln[2, :] < 0) - 1
+    range_ = soln[0, range_idx] - soln[0, 0]
+    plt.plot(soln[0], soln[2], label=r'mass = %.2f kg, Range = %.2f m' % (mass, range_))
+    Range.append(range_)
+
 
 plt.plot(no_drag[0],no_drag[2],label=r'No Drag Model')
 plt.grid()
-plt.ylabel(r'y (m)',size=18)
-plt.xlabel(r'x (m)',size=20)
+plt.ylabel(r'y (m)')
+plt.xlabel(r'x (m)')
 plt.ylim(0,130)
-plt.title(r'Trajectory of a Projectile with Quadratic Drag model', size=21)
-plt.tick_params(axis='both', which='major', labelsize=15)
-plt.tick_params(axis='both', which='minor', labelsize=12)
-plt.legend(loc='best',prop={'size': 18})
-plt.savefig('5_2.png')
+plt.title(r'Quadratic Drag model')
+plt.legend(loc='best')
+plt.savefig('Ques5/5(ii).png')
 plt.show()
     
-plt.figure(figsize=(13,10))
+plt.figure(figsize=(10,10))
 plt.plot(m,Range)
 plt.grid()
-plt.ylabel(r'Range (m)',size=18)
-plt.xlabel(r'Mass (kg)',size=20)
-plt.title(r'Projectile Trajectory without Drag', size=21)
-plt.tick_params(axis='both', which='major', labelsize=15)
-plt.tick_params(axis='both', which='minor', labelsize=12)
-plt.savefig('5_3.png')
+plt.ylabel(r'Range (m)')
+plt.xlabel(r'Mass (kg)')
+plt.title(r'Mass vs Range')
+plt.savefig('Ques5/5(iii).png')
 plt.show()

@@ -28,33 +28,27 @@ def RK4(ode_func, y0, t):
 
     return y[:,:n]
 
-def f(t,x,m,k,F): #F is an array of functions of time
-    pos = [x[i] for i in range(0,len(x),2)]
-    vel = [x[i] for i in range(1,len(x),2)]
-    acc = [(k/m)*(pos[i+1]-pos[i])+F[i](t) for i in range (0,len(pos)-1)]
-    acc.append((k/m)*(pos[len(pos)-2]-pos[len(pos)-1])+F[len(pos)-1](t))
-    vector = np.zeros((2*len(pos),1))
-    counter = 0
-    for i in range(0,2*len(pos),2):
-        vector[i] = vel[counter]
-        vector[i+1] = acc[counter]
-        counter += 1
+def f(t,x,m,k,F,N): #F is an array of functions of time
+    pos = x[0::2]
+    vel = x[1::2]
+    acc = np.zeros(N)
+    for i in range(N-1):
+        acc[i] = (k/m)*(pos[i+1]-pos[i])+F[i](t)
+    acc[-1] = (k/m)*(pos[N-2]-pos[len(pos)-1])+F[N-1](t)
+    vector = np.zeros((2*N,1))
+    vector[0::2,0] = vel
+    vector[1::2,0] = acc
     return vector
 
-N = 5
-m = 1
-k = 6
-omega = 2
-
-F = [lambda t:0 for i in range(0,N)]
-F[0] = lambda t: np.cos(omega*t)
+F = [lambda t:0 for i in range(0,5)]
+F[0] = lambda t: np.cos(2*t)
 
 t = np.linspace(0,20,10000)
-y0 =  np.random.randint(0,10,size=2*N)
-soln = RK4(lambda t,x: f(t,x,m,k,F),y0,t)
+y0 =  np.random.randint(0,10,size=2*5)
+soln = RK4(lambda t,x: f(t,x,1,6,F,5),y0,t)
 
 plt.figure(figsize=(10,10))
-for i in range(0,N):
+for i in range(0,5):
     plt.plot(t,soln[2*i],label=r'Mass No. %d'%(i+1))
 plt.grid()
 plt.ylabel(r'$x$')

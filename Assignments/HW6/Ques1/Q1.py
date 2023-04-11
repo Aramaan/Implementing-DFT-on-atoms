@@ -29,17 +29,15 @@ def RK4(ode_func, y0, t):
     return y[:n]
 
 Vout0 = 0
-int()
+
 def Input(t):
-    vector = np.vectorize(np.int_)
-    x = vector(np.floor(2*t))
-    I = np.piecewise(t,x%2==0,[1,-1])
+    x = np.floor(2*t).astype(int)
+    I = np.where(x % 2 == 0, 1, -1)
     return I
 
-
-def dVdt(t,Vout,RC):
+def dVdt(t, Vout, RC):
     V = Input(t)
-    return (V - Vout)/RC
+    return (V - Vout) / RC
 
 t = np.linspace(0,10,100000)
 
@@ -59,7 +57,7 @@ plt.plot(t,Vout)
 plt.grid()
 plt.ylabel(r'Output Voltage')
 plt.xlabel(r'time')
-plt.title(r'Low Pass Filter ($RC=%0.01$)')
+plt.title(r'RC=0.01')
 plt.savefig('Ques1/1(i).png')
 plt.show()
 
@@ -70,7 +68,7 @@ plt.plot(t,Vout)
 plt.grid()
 plt.ylabel(r'Output Voltage')
 plt.xlabel(r'time')
-plt.title(r'Low Pass Filter ($RC=%0.1$)')
+plt.title(r'RC=0.1')
 plt.savefig('Ques1/1(ii).png')
 plt.show()
 
@@ -81,6 +79,6 @@ plt.plot(t,Vout)
 plt.grid()
 plt.ylabel(r'Output Voltage')
 plt.xlabel(r'time')
-plt.title(r'Low Pass Filter ($RC=%1$)')
+plt.title(r'RC=1')
 plt.savefig('Ques1/1(iii).png')
 plt.show()

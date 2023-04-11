@@ -28,33 +28,32 @@ def RK4(ode_func, y0, t):
 
     return y[:,:n]
 
-def f(t,x,sigma,r,b):
-    x, y, z = x
-    xdot = sigma*(y-x)
-    ydot = r*x - y - x*z
-    zdot = x*y - b*z
-    return np.array([[xdot,ydot,zdot]]).T
+def f(t, x, sigma, r, b):
+    dxdt, dydt, dzdt = sigma * (x[1] - x[0]), r * x[0] - x[1] - x[0] * x[2], x[0] * x[1] - b * x[2]
+    return np.array([[dxdt, dydt, dzdt]]).T
 
-t = np.linspace(0,50,100000)
-y0 = [0,1,0]
-soln = RK4(lambda t,x: f(t,x,10,28,8/3),y0,t)
+t = np.linspace(0, 50, 100000)
+y0 = [0, 1, 0]
+soln = RK4(lambda t, x: f(t, x, 10, 28, 8 / 3), y0, t)
 
-plt.figure(figsize=(13,10))
-plt.plot(t,soln[1],label=r'$(\sigma,r,b)=(10,28,\frac{8}{3}$)')
-plt.grid()
+# Plot 1
+plt.figure(figsize=(10, 10))
+plt.plot(t, soln[1], label=r'$(\sigma,r,b)=(10,28,\frac{8}{3}$)')
+plt.title(r'Lorenz Equation')
+plt.legend(loc='best')
 plt.ylabel(r'y')
 plt.xlabel(r'time')
-plt.title(r'Lorenz Equation')
-plt.legend(loc='best',prop={'size': 18})
+plt.grid()
 plt.savefig('Ques3/3(ii).png')
 plt.show()
 
-plt.figure(figsize=(13,10))
-plt.plot(soln[0],soln[2],label='Initial Condition\n(x,y,z)=(%.1f,%.1f,%.1f)'%(y0[0],y0[1],y0[2]))
-plt.grid()
+# Plot 2
+plt.figure(figsize=(10, 10))
+plt.plot(soln[0], soln[2])
+plt.title(r'Lorenz Equation - Phase Diagram')
+plt.legend(loc='best')
 plt.ylabel(r'z')
 plt.xlabel(r'x')
-plt.title(r'Lorenz Equation Phase Diagram')
-plt.legend(loc='best',prop={'size': 18})
+plt.grid()
 plt.savefig('Ques3/3(ii).png')
 plt.show()

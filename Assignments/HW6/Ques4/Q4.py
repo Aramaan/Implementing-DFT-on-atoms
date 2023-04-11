@@ -1,145 +1,137 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def RK4(ode_func, y0, t):
-    """
-    Implementation of the Fourth Order Runge-Kutta (RK4) method.
-    Args:
-        ode_func (function): ODE function f(t, y) to be solved.
-        y0 (float): Initial value of the dependent variable.
-        t0 (float): Initial value of the independent variable.
-        t_end (float): End value of the independent variable.
-        h (float): Step size.
-    Returns:
-        tuple: Tuple containing two arrays: t (array of time steps) and y (array of solutions).
-    """
-    h = t[1]-t[0]
-    n = len(t)
-    y = np.zeros(n+1)
-    y[0] = y0
+def RK4(f, x0, t, *args):
+    dt = t[1] - t[0]
+    x = np.zeros((len(t), len(x0)))
+    x[0] = x0
+    for i in range(len(t) - 1):
+        k1 = dt * f(t[i], x[i], *args)
+        k2 = dt * f(t[i] + dt/2, x[i] + k1/2, *args)
+        k3 = dt * f(t[i] + dt/2, x[i] + k2/2, *args)
+        k4 = dt * f(t[i] + dt, x[i] + k3, *args)
+        x[i+1] = x[i] + (k1 + 2*k2 + 2*k3 + k4)/6
+    return x.T
 
-    for i in range(n):
-        k1 = h * ode_func(t[i], y[i])
-        k2 = h * ode_func(t[i] + h/2, y[i] + k1/2)
-        k3 = h * ode_func(t[i] + h/2, y[i] + k2/2)
-        k4 = h * ode_func(t[i] + h, y[i] + k3)
+# Define the harmonic oscillator function
+def harmonic_oscillator(t, x, omega):
+    x, y = x
+    dxdt = y
+    dydt = -omega**2 * x
+    return np.array([dxdt, dydt])
 
-        y[i + 1] = y[i] + (k1 + 2*k2 + 2*k3 + k4) / 6
+# Define the anharmonic oscillator function
+def anharmonic_oscillator(t, x, omega):
+    x, y = x
+    dxdt = y
+    dydt = -omega**2 * x**3
+    return np.array([dxdt, dydt])
 
-    return y[:n]
+# Define the van der Pol oscillator function
+def van_der_pol_oscillator(t, x, omega, mu):
+    x, y = x
+    dxdt = y
+    dydt = mu * (1 - x**2) * y - omega**2 * x
+    return np.array([dxdt, dydt])
 
 '''
 Harmonic Oscillator
 '''
 
-def f(t,x,omega):
-    x, y = x
-    xdot = y
-    ydot = -omega**2*x 
-    return np.array([[xdot,ydot]]).T
-
 x0 = [1,0] #x(t=0), dx/dt(t=0)
 t = np.linspace(0,50,1000)
 omega = 1
-soln = RK4(f,x0,t,omega)
+soln = RK4(harmonic_oscillator,x0,t,omega)
 
-plt.figure(figsize=(13,10))
-plt.plot(t,soln[0])#,label=r'$(\sigma,r,b)=(10,28,\frac{8}{3}$)')
+plt.figure(figsize=(10,10))
+plt.plot(t,soln[0])
 plt.grid()
-plt.ylabel(r'x',size=18)
-plt.xlabel(r'time',size=20)
-plt.title(r'Simple Harmonic Oscillator $\ddot{x}=-\omega ^2 x$', size=21)
-plt.savefig('4_1.png')
+plt.ylabel('Displacement (x)')
+plt.xlabel('Time')
+plt.title('Simple Harmonic Oscillator: Displacement vs Time')
+plt.savefig('Ques4/4(i).png')
 plt.show()
 
-plt.figure(figsize=(13,10))
-plt.plot(soln[0],soln[1])#,label=r'$(\sigma,r,b)=(10,28,\frac{8}{3}$)')
+plt.figure(figsize=(10,10))
+plt.plot(soln[0],soln[1])
 plt.grid()
-plt.ylabel(r'Velocity',size=18)
-plt.xlabel(r'Displacement',size=20)
-plt.title(r'Simple Harmonic Oscillator Phase Diagram$', size=21)
-plt.savefig('4_2.png')
+plt.ylabel('Velocity')
+plt.xlabel('Displacement (x)')
+plt.title('Simple Harmonic Oscillator: Phase Diagram')
+plt.savefig('Ques4/4(ii).png')
 plt.show()
 
 sampling = 1/(t[1]-t[0])
-period = 1/(np.argmax(np.abs(np.fft.fft(soln[0]))[:len(t)//2])*sampling/len(t))
+freqs = np.fft.fftfreq(len(t), d=1/sampling)
+ft_x = np.fft.fft(soln[0])
+ft_x_abs = np.abs(ft_x[:len(t)//2])
 
-Amplitude = np.linspace(1,10,100)
-period = [RK4.RK4(f,[A,0],t,omega)[0] for A in Amplitude]
-period = [1/(np.argmax(np.abs(np.fft.fft(x))[:len(t)//2])*sampling/len(t)) for x in period]
+period = 1 / freqs[np.argmax(ft_x_abs)]
+amplitude = np.linspace(1,10,100)
 
-
-plt.figure(figsize=(13,10))
-plt.plot(Amplitude,period)#,label=r'$(\sigma,r,b)=(10,28,\frac{8}{3}$)')
+plt.figure(figsize=(10,10))
+plt.plot(amplitude, period * np.ones(len(amplitude)))
 plt.grid()
-plt.ylabel(r'Time Period',size=18)
-plt.xlabel(r'Amplitude',size=20)
-plt.title(r'Simple Harmonic Oscillator $\ddot{x}=-\omega ^2 x$', size=21)
-plt.savefig('4_3.png')
+plt.ylabel('Time Period')
+plt.xlabel('Amplitude')
+plt.title('Simple Harmonic Oscillator: Time Period vs Amplitude')
+plt.savefig('Ques4/4(iii).png')
 plt.show()
 
 '''
 Anharmonic Oscillator
 '''
 
-def f(t,x,omega):
-    x, y = x
-    xdot = y
-    ydot = -omega**2*x**3
-    return np.array([[xdot,ydot]]).T
-
-x0 = [1,0] #x(t=0), dx/dt(t=0)
+x0 = [1,0] 
 t = np.linspace(0,50,1000)
 omega = 1
-soln = RK4(f,x0,t,omega)
+sol = RK4(anharmonic_oscillator,x0,t,omega)
 
-plt.figure(figsize=(13,10))
-plt.plot(soln[0],soln[1])#,label=r'$(\sigma,r,b)=(10,28,\frac{8}{3}$)')
+plt.figure(figsize=(10,10))
+plt.plot(sol[0],sol[1])
 plt.grid()
-plt.ylabel(r'Velocity',size=18)
-plt.xlabel(r'Displacement',size=20)
-plt.title(r'Anharmonic Oscillator Phase Diagram$', size=21)
-plt.savefig('4_4.png')
+plt.ylabel(r'Velocity')
+plt.xlabel(r'Displacement')
+plt.title(r'Anharmonic Oscillator: Phase Diagram$')
+plt.savefig('Ques4/4(iv).png')
 plt.show()
 
+sampling = 1/(t[1]-t[0])
+freqs = np.fft.fftfreq(len(t), d=1/sampling)
+ft_x = np.fft.fft(sol[0])
+ft_x_abs = np.abs(ft_x[:len(t)//2])
+
+period = 1 / freqs[np.argmax(ft_x_abs)]
 Amplitude = np.linspace(1,10,100)
-period = [RK4.RK4(f,[A,0],t,omega)[0] for A in Amplitude]
-period = [1/(np.argmax(np.abs(np.fft.fft(x))[:len(t)//2])*sampling/len(t)) for x in period]
 
-
-plt.figure(figsize=(13,10))
-plt.plot(Amplitude,period)#,label=r'$(\sigma,r,b)=(10,28,\frac{8}{3}$)')
+plt.figure(figsize=(10,10))
+plt.plot(Amplitude, period * np.ones(len(Amplitude)))
 plt.grid()
-plt.ylabel(r'Time Period',size=18)
-plt.xlabel(r'Amplitude',size=20)
-plt.title(r'Anharmonic Oscillator $\ddot{x}=-\omega ^2 x^3$', size=21)
-plt.savefig('4_5.png')
+plt.ylabel(r'Time Period')
+plt.xlabel(r'Amplitude')
+plt.title(r'Anharmonic Oscillator: Time Period vs Amplitude')
+plt.savefig('Ques4/4(v).png')
 plt.show()
 
 '''
 van der Pol oscillator
 '''
 
-def f(t,x,omega,mu):
-    x, y = x
-    xdot = y
-    ydot = mu*(1-x**2)*y-omega**2*x
-    return np.array([[xdot,ydot]]).T
+x0 = [1, 0]
+t = np.linspace(0, 20, 100000)
+omega, mu = 1, [1, 2, 4, 5]
 
-x0 = [1,0] #x(t=0), dx/dt(t=0)
-t = np.linspace(0,20,100000)
-omega, mu = 1, [1,2,4,5]
+plt.figure(figsize=(10, 10))
 
-plt.figure(figsize=(13,10))
-for i in range(0,len(mu)):
-    soln = RK4.RK4(f,x0,t,omega,mu[i])
-    plt.plot(soln[0],soln[1],label=r'$(\omega,\mu)$=(%d,%d)'%(omega,mu[i]))
-    
+for mu_val in mu:
+    soln = RK4(van_der_pol_oscillator, x0, t, omega, mu_val)
+    label = '($\omega$, $\mu$) = ({}, {})'.format(omega, mu_val)
+    plt.plot(soln[0], soln[1], label=label)
+
 plt.grid()
-plt.ylabel(r'Velocity',size=18)
-plt.xlabel(r'Displacement',size=20)
-plt.title(r'Van der Pol Oscillator Phase Diagram', size=21)
-plt.legend(loc='best',prop={'size': 18})
-plt.savefig('4_6.png')
+plt.ylabel('Velocity')
+plt.xlabel('Displacement')
+plt.title('Van der Pol Oscillator Phase Diagram')
+plt.legend(loc='best')
+plt.savefig('Ques4/4(vi).png')
 plt.show()
-    
